@@ -3,10 +3,6 @@ import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 export class CreateAccountDto {
   @IsString()
   @IsNotEmpty()
-  fullname: string;
-
-  @IsString()
-  @IsNotEmpty()
   firstName: string;
 
   @IsString()
@@ -20,13 +16,9 @@ export class CreateAccountDto {
 
   @IsString()
   @IsNotEmpty()
-  notionalCode: string;
+  nationalCode: string;
 
   @IsString()
   @IsNotEmpty()
   password: string;
-
-  @IsString()
-  @IsNotEmpty()
-  amount: string;
 }

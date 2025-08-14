@@ -19,7 +19,7 @@ export class Account {
   @Column({ nullable: false })
   lastName: string;
 
-  @Column({ nullable: false, unique: true, length: 10 })
+  @Column({ nullable: false, unique: true })
   nationalCode: string;
 
   @Column({ nullable: false, unique: true })
@@ -28,6 +28,6 @@ export class Account {
   @Column({ nullable: false })
   password: string;
 
-  @Column({ nullable: false, default: '5000' })
+  @Column({ nullable: false, default: '50000' })
   amount: string;
 }

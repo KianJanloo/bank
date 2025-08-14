@@ -1,9 +1,14 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
 import { Repository } from 'typeorm';
 import { Account } from 'src/entities/Account.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AccountService {
@@ -14,32 +19,55 @@ export class AccountService {
 
   async create(createAccountDto: CreateAccountDto) {
     try {
+      const hashedPassword = await bcrypt.hash(createAccountDto.password, 10);
+      createAccountDto.password = hashedPassword;
       const account = this.accountRepository.create(createAccountDto);
       await this.accountRepository.save(account);
       return account;
-    } catch (error) {
-      throw new HttpException(error, 500);
+    } catch {
+      throw new InternalServerErrorException('Error creating account');
     }
   }
 
   async findAll() {
     try {
-      const accounts = await this.accountRepository.find();
+      const accounts = await this.accountRepository.find({
+        select: [
+          'id',
+          'email',
+          'nationalCode',
+          'firstName',
+          'lastName',
+          'fullname',
+          'amount',
+        ],
+      });
       return accounts;
-    } catch (error) {
-      throw new HttpException(error, 500);
+    } catch {
+      throw new InternalServerErrorException('Error finding accounts');
     }
   }
 
   async findOne(id: number) {
     try {
-      const account = await this.accountRepository.findOne({ where: { id } });
+      const account = await this.accountRepository.findOne({
+        where: { id },
+        select: [
+          'id',
+          'email',
+          'nationalCode',
+          'firstName',
+          'lastName',
+          'fullname',
+          'amount',
+        ],
+      });
       if (!account) {
         throw new HttpException('Account not found', 404);
       }
       return account;
-    } catch (error) {
-      throw new HttpException(error, 500);
+    } catch {
+      throw new InternalServerErrorException('Error finding account');
     }
   }
 
@@ -53,8 +81,8 @@ export class AccountService {
         throw new HttpException('Account not found', 404);
       }
       return updatedAccount;
-    } catch (error) {
-      throw new HttpException(error, 500);
+    } catch {
+      throw new InternalServerErrorException('Error updating account');
     }
   }
 
@@ -66,8 +94,22 @@ export class AccountService {
       }
       await this.accountRepository.remove(account);
       return account;
-    } catch (error) {
-      throw new HttpException(error, 500);
+    } catch {
+      throw new InternalServerErrorException('Error deleting account');
+    }
+  }
+
+  async addAmountToAccount(id: number, amount: string) {
+    try {
+      const account = await this.accountRepository.findOne({ where: { id } });
+      if (!account) {
+        throw new HttpException('Account not found', 404);
+      }
+      const amountFinally = parseFloat(account.amount) + parseFloat(amount);
+      await this.accountRepository.save(account);
+      return { ...account, amount: amountFinally };
+    } catch {
+      throw new InternalServerErrorException('Error adding amount to account');
     }
   }
 }

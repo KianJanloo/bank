@@ -39,4 +39,9 @@ export class AccountController {
   remove(@Param('id') id: string) {
     return this.accountService.remove(+id);
   }
+
+  @Post('/amount/:id')
+  addAmount(@Param('id') id: string, @Body('amount') amount: string) {
+    return this.accountService.addAmountToAccount(+id, amount);
+  }
 }
