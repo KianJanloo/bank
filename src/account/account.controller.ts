@@ -10,6 +10,7 @@ import {
 import { AccountService } from './account.service';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
+import { LoginDto } from './dto/login-account-dto';
 
 @Controller('account')
 export class AccountController {
@@ -43,5 +44,10 @@ export class AccountController {
   @Post('/amount/:id')
   addAmount(@Param('id') id: string, @Body('amount') amount: string) {
     return this.accountService.addAmountToAccount(+id, amount);
+  }
+
+  @Post('/login')
+  login(@Body() loginDto: LoginDto) {
+    return this.accountService.login(loginDto);
   }
 }

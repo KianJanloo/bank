@@ -25,6 +25,9 @@ export class Account {
   @Column({ nullable: false, unique: true })
   email: string;
 
+  @Column({ nullable: false, unique: true })
+  phoneNumber: string;
+
   @Column({ nullable: false })
   password: string;
 
