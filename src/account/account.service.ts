@@ -2,6 +2,7 @@ import {
   HttpException,
   Injectable,
   InternalServerErrorException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
@@ -10,27 +11,34 @@ import { Account } from 'src/entities/Account.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login-account-dto';
-import {
-  generateAccessToken,
-  generateRefreshToken,
-} from 'src/utils/token-service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AccountService {
   constructor(
+    private readonly jwtService: JwtService,
     @InjectRepository(Account)
     private readonly accountRepository: Repository<Account>,
   ) {}
 
   async create(createAccountDto: CreateAccountDto) {
     try {
+      const accountFind = await this.accountRepository.findOne({
+        where: {
+          email: createAccountDto.email,
+          phoneNumber: createAccountDto.phoneNumber,
+        },
+      });
+      if (accountFind) {
+        throw new HttpException('Account already is defined', 409);
+      }
       const hashedPassword = await bcrypt.hash(createAccountDto.password, 10);
       createAccountDto.password = hashedPassword;
       const account = this.accountRepository.create(createAccountDto);
       await this.accountRepository.save(account);
-      return account;
-    } catch {
-      throw new InternalServerErrorException('Error creating account');
+      return account.id;
+    } catch (error) {
+      throw new InternalServerErrorException(error, 'Error creating account');
     }
   }
 
@@ -45,11 +53,12 @@ export class AccountService {
           'lastName',
           'fullname',
           'amount',
+          'phoneNumber',
         ],
       });
       return accounts;
-    } catch {
-      throw new InternalServerErrorException('Error finding accounts');
+    } catch (error) {
+      throw new InternalServerErrorException(error, 'Error finding accounts');
     }
   }
 
@@ -65,14 +74,15 @@ export class AccountService {
           'lastName',
           'fullname',
           'amount',
+          'phoneNumber',
         ],
       });
       if (!account) {
         throw new HttpException('Account not found', 404);
       }
       return account;
-    } catch {
-      throw new InternalServerErrorException('Error finding account');
+    } catch (error) {
+      throw new InternalServerErrorException(error, 'Error finding account');
     }
   }
 
@@ -86,8 +96,8 @@ export class AccountService {
         throw new HttpException('Account not found', 404);
       }
       return updatedAccount;
-    } catch {
-      throw new InternalServerErrorException('Error updating account');
+    } catch (error) {
+      throw new InternalServerErrorException(error, 'Error updating account');
     }
   }
 
@@ -99,8 +109,8 @@ export class AccountService {
       }
       await this.accountRepository.remove(account);
       return account;
-    } catch {
-      throw new InternalServerErrorException('Error deleting account');
+    } catch (error) {
+      throw new InternalServerErrorException(error, 'Error deleting account');
     }
   }
 
@@ -120,34 +130,56 @@ export class AccountService {
         id: account.id,
         amount: account.amount,
       };
-    } catch {
-      throw new InternalServerErrorException('Error adding amount to account');
+    } catch (error) {
+      throw new InternalServerErrorException(
+        error,
+        'Error adding amount to account',
+      );
     }
   }
 
   async login(loginDto: LoginDto) {
     try {
+      const { email, phoneNumber, password } = loginDto;
+      const whereCondition = email ? { email } : { phoneNumber };
+
       const account = await this.accountRepository.findOne({
-        where: { email: loginDto.email },
+        where: whereCondition,
       });
+
       if (!account) {
-        throw new HttpException('Account not found', 401);
+        throw new UnauthorizedException('Invalid credentials');
       }
-      const isPasswordValid = await bcrypt.compare(
-        loginDto.password,
-        account.password,
-      );
+
+      const isPasswordValid = await bcrypt.compare(password, account.password);
       if (!isPasswordValid) {
-        throw new HttpException('Invalid credentials', 401);
+        throw new UnauthorizedException('Invalid credentials');
       }
-      const accessToken = generateAccessToken(account);
-      const refreshToken = generateRefreshToken(account);
-      return {
-        accessToken,
-        refreshToken,
-      };
+
+      return this.generateTokens({
+        id: account.id,
+        email: account.email,
+        phoneNumber: account.phoneNumber,
+      });
     } catch {
-      throw new InternalServerErrorException('Error logging in');
+      throw new InternalServerErrorException('Login failed');
     }
+  }
+
+  private generateTokens(user: {
+    id: number;
+    email: string;
+    phoneNumber: string;
+  }) {
+    const accessToken = this.jwtService.sign(user, {
+      expiresIn: '1h',
+    });
+    const refreshToken = this.jwtService.sign(user, {
+      expiresIn: '15d',
+    });
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 }

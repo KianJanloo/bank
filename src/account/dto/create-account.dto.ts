@@ -15,7 +15,6 @@ export class CreateAccountDto {
   email: string;
 
   @IsString()
-  @IsEmail()
   @IsNotEmpty()
   phoneNumber: string;
 

@@ -14,6 +14,9 @@ importers:
       '@nestjs/core':
         specifier: ^11.0.1
         version: 11.1.6(@nestjs/common@11.1.6(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@11.1.6)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/jwt':
+        specifier: ^11.0.0
+        version: 11.0.0(@nestjs/common@11.1.6(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))
       '@nestjs/mapped-types':
         specifier: '*'
         version: 2.1.0(@nestjs/common@11.1.6(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)
@@ -35,6 +38,9 @@ importers:
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.2
+      jwt-service:
+        specifier: ^11.0.2
+        version: 11.0.2
       pg:
         specifier: ^8.16.3
         version: 8.16.3
@@ -777,6 +783,11 @@ packages:
       '@nestjs/websockets':
         optional: true
 
+  '@nestjs/jwt@11.0.0':
+    resolution: {integrity: sha512-v7YRsW3Xi8HNTsO+jeHSEEqelX37TVWgwt+BcxtkG/OfXJEOs6GZdbdza200d6KqId1pJQZ6UPj1F0M6E+mxaA==}
+    peerDependencies:
+      '@nestjs/common': ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
+
   '@nestjs/mapped-types@2.1.0':
     resolution: {integrity: sha512-W+n+rM69XsFdwORF11UqJahn4J3xi4g/ZEOlJNL6KoW5ygWSmBB2p0S2BZ4FQeS/NDH72e6xIcu35SfJnE8bXw==}
     peerDependencies:
@@ -1045,6 +1056,9 @@ packages:
 
   '@types/jsonwebtoken@9.0.10':
     resolution: {integrity: sha512-asx5hIG9Qmf/1oStypjanR7iKTv0gXQ1Ov/jfrX6kS/EO0OFni8orbmGCn0672NHR3kXHwpAwR+B368ZGN/2rA==}
+
+  '@types/jsonwebtoken@9.0.7':
+    resolution: {integrity: sha512-ugo316mmTYBl2g81zDFnZ7cfxlut3o+/EQdaP7J8QN2kY6lJ22hmQYCK5EHcJHbrW+dkCGSCPgbG8JtYj6qSrg==}
 
   '@types/methods@1.1.4':
     resolution: {integrity: sha512-ymXWVrDiCxTBE3+RIrrP533E70eA+9qu7zdWoHuOmGujkYtzf4HQF96b8nwHLqhuf4ykX61IGRIB38CC6/sImQ==}
@@ -1594,6 +1608,10 @@ packages:
   comment-json@4.2.5:
     resolution: {integrity: sha512-bKw/r35jR3HGt5PEPm1ljsQQGyCrR8sFGNiN5L+ykDHdpO8Smxkrkla9Yi6NkQyUrb8V54PGhfMs6NrIwtxtdw==}
     engines: {node: '>= 6'}
+
+  common-services@17.1.1:
+    resolution: {integrity: sha512-vCfI0AuggNMPPkJdQwYQakh3rSSctXIeNVxsJr4SxbhCU1EmAQlxq6krcvFCrEwWTpNIF6xJliTstkFySUosEA==}
+    engines: {node: '>=22.16.0'}
 
   component-emitter@1.3.1:
     resolution: {integrity: sha512-T0+barUSQRTUQASh8bx02dl+DhF54GtIDY13Y3m9oWTklKbb3Wv974meRpeZ3lp1JpLVECWWNHC4vaG2XHXouQ==}
@@ -2486,6 +2504,10 @@ packages:
   jws@3.2.2:
     resolution: {integrity: sha512-YHlZCB6lMTllWDtSPHz/ZXTsi8S00usEV6v1tjq8tOUZzw7DpSDWVXjXDre6ed1w/pd495ODpHZYSdkRTsa0HA==}
 
+  jwt-service@11.0.2:
+    resolution: {integrity: sha512-6Xrl+Tn2rzOtSM/Hca2k2A7Ew05L200k0kl/esVPj0CBmTPe8Gt05Jp/cF8Y+96R1bS62WDlbu2cOhzo27PAuQ==}
+    engines: {node: '>=20.11.1'}
+
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
@@ -2496,6 +2518,14 @@ packages:
   kleur@3.0.3:
     resolution: {integrity: sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==}
     engines: {node: '>=6'}
+
+  knifecycle@18.0.0:
+    resolution: {integrity: sha512-7DAEhllxcQaMnGzVfvtQYhNFuIuh6Rv5/qt4RENPF1GVFLUbgW/G48ucQkeUu2Tto+AFgqgUtnelpDcLHW23yA==}
+    engines: {node: '>=20.11.1'}
+
+  knifecycle@19.1.2:
+    resolution: {integrity: sha512-bs36OhrM6k5nuhBBt9GOSzcci2/f8BDTPfLQBrvcs8kkEnxokVM0x+CE9cdEORqH4C5x+0u2ziMhGxMx14Xsww==}
+    engines: {node: '>=22.16.0'}
 
   leven@3.1.0:
     resolution: {integrity: sha512-qsda+H8jTaUaN/x5vzW2rzc+8Rw4TAQ/4KjB46IwK5VH+IlVeeeje/EoZRpiXvIqjFgK84QffqPztGI3VBLG1A==}
@@ -3643,6 +3673,10 @@ packages:
     resolution: {integrity: sha512-Ow9nuGZE+qp1u4JIPvg+uCiUr7xGQWdff7JQSk5VGYTAZMDe2q8lxJ10ygv10qmSj031Ty/6FNJpLO4o1Sgc+w==}
     engines: {node: '>=12'}
 
+  yerror@8.0.0:
+    resolution: {integrity: sha512-FemWD5/UqNm8ffj8oZIbjWXIF2KE0mZssggYpdaQkWDDgXBQ/35PNIxEuz6/YLn9o0kOxDBNJe8x8k9ljD7k/g==}
+    engines: {node: '>=18.16.0'}
+
   yn@3.1.1:
     resolution: {integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==}
     engines: {node: '>=6'}
@@ -4427,6 +4461,12 @@ snapshots:
     optionalDependencies:
       '@nestjs/platform-express': 11.1.6(@nestjs/common@11.1.6(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)
 
+  '@nestjs/jwt@11.0.0(@nestjs/common@11.1.6(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))':
+    dependencies:
+      '@nestjs/common': 11.1.6(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@types/jsonwebtoken': 9.0.7
+      jsonwebtoken: 9.0.2
+
   '@nestjs/mapped-types@2.1.0(@nestjs/common@11.1.6(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)':
     dependencies:
       '@nestjs/common': 11.1.6(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -4706,6 +4746,10 @@ snapshots:
   '@types/jsonwebtoken@9.0.10':
     dependencies:
       '@types/ms': 2.1.0
+      '@types/node': 22.17.1
+
+  '@types/jsonwebtoken@9.0.7':
+    dependencies:
       '@types/node': 22.17.1
 
   '@types/methods@1.1.4': {}
@@ -5377,6 +5421,14 @@ snapshots:
       esprima: 4.0.1
       has-own-prop: 2.0.0
       repeat-string: 1.6.1
+
+  common-services@17.1.1:
+    dependencies:
+      knifecycle: 19.1.2
+      type-fest: 4.41.0
+      yerror: 8.0.0
+    transitivePeerDependencies:
+      - supports-color
 
   component-emitter@1.3.1: {}
 
@@ -6498,6 +6550,18 @@ snapshots:
       jwa: 1.4.2
       safe-buffer: 5.2.1
 
+  jwt-service@11.0.2:
+    dependencies:
+      '@types/jsonwebtoken': 9.0.10
+      '@types/ms': 2.1.0
+      common-services: 17.1.1
+      jsonwebtoken: 9.0.2
+      knifecycle: 18.0.0
+      ms: 2.1.3
+      yerror: 8.0.0
+    transitivePeerDependencies:
+      - supports-color
+
   keyv@4.5.4:
     dependencies:
       json-buffer: 3.0.1
@@ -6505,6 +6569,20 @@ snapshots:
   kind-of@6.0.3: {}
 
   kleur@3.0.3: {}
+
+  knifecycle@18.0.0:
+    dependencies:
+      debug: 4.4.1
+      yerror: 8.0.0
+    transitivePeerDependencies:
+      - supports-color
+
+  knifecycle@19.1.2:
+    dependencies:
+      debug: 4.4.1
+      yerror: 8.0.0
+    transitivePeerDependencies:
+      - supports-color
 
   leven@3.1.0: {}
 
@@ -7568,6 +7646,8 @@ snapshots:
     dependencies:
       buffer-crc32: 0.2.13
       pend: 1.2.0
+
+  yerror@8.0.0: {}
 
   yn@3.1.1: {}
 
