@@ -31,6 +31,14 @@ export class Account {
   @Column({ nullable: false })
   password: string;
 
+  @Column({
+    type: 'simple-array',
+    nullable: false,
+    enum: ['admin', 'user'],
+    default: 'user',
+  })
+  roles: string[];
+
   @Column({ nullable: false, default: '50000' })
   amount: string;
 }

@@ -25,6 +25,7 @@ export class AccountService {
       where: {
         email: createAccountDto.email,
         phoneNumber: createAccountDto.phoneNumber,
+        nationalCode: createAccountDto.nationalCode,
       },
     });
     if (accountFind) {
@@ -112,6 +113,73 @@ export class AccountService {
     };
   }
 
+  async removeAmountFromAccount(id: number, amount: string) {
+    const account = await this.accountRepository.findOne({ where: { id } });
+    if (!account) {
+      throw new HttpException('Account not found', 404);
+    }
+    if (amount > account.amount) {
+      throw new HttpException('The amount is not enough', 420);
+    }
+    const amountFinally = parseFloat(account.amount) - parseFloat(amount);
+    account.amount = amountFinally.toString();
+    if (isNaN(amountFinally)) {
+      account.amount = amount;
+    }
+    await this.accountRepository.save(account);
+    return {
+      id: account.id,
+      amount: account.amount,
+    };
+  }
+
+  async clearTheAccount(id: number) {
+    const account = await this.accountRepository.findOne({ where: { id } });
+    if (!account) {
+      throw new HttpException('Account not found', 404);
+    }
+    account.amount = '0';
+    await this.accountRepository.save(account);
+    return {
+      id: account.id,
+      amount: account.amount,
+    };
+  }
+
+  async CardToCard(payerId: number, receiverId: number, amount: number) {
+    const payerAccount = await this.accountRepository.findOne({
+      where: { id: payerId },
+    });
+    const receiverAccount = await this.accountRepository.findOne({
+      where: { id: receiverId },
+    });
+    if (!payerAccount) {
+      throw new HttpException('Payer account not found', 404);
+    }
+    if (!receiverAccount) {
+      throw new HttpException('Receiver account not found', 404);
+    }
+
+    if (parseFloat(payerAccount.amount) < amount) {
+      throw new HttpException(
+        'Amount of payer account is not enough for this way payment (card to card)',
+        420,
+      );
+    }
+    payerAccount.amount = String(parseFloat(payerAccount.amount) - amount);
+    receiverAccount.amount = String(
+      parseFloat(receiverAccount.amount) + amount,
+    );
+
+    await this.accountRepository.save(payerAccount);
+    await this.accountRepository.save(receiverAccount);
+    return {
+      massage: 'The operator successfully completed',
+      payerAmount: payerAccount.amount,
+      receiverAmount: receiverAccount.amount,
+    };
+  }
+
   async login(loginDto: LoginDto) {
     const { email, phoneNumber, password } = loginDto;
     const whereCondition = email ? { email } : { phoneNumber };
@@ -133,6 +201,7 @@ export class AccountService {
       id: account.id,
       email: account.email,
       phoneNumber: account.phoneNumber,
+      roles: account.roles,
     });
   }
 
@@ -140,6 +209,7 @@ export class AccountService {
     id: number;
     email: string;
     phoneNumber: string;
+    roles: string[];
   }) {
     const accessToken = this.jwtService.sign(user, {
       expiresIn: '1h',
