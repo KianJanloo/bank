@@ -1,46 +1,68 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+// src/entities/User.ts
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Account } from './Account.entity';
 
-@Entity()
+export type UserRole = 'user' | 'admin';
+export type UserStatus = 'active' | 'inactive' | 'suspended';
+
+@Entity('users')
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number; // The Primary ID ( unique )
+  @PrimaryGeneratedColumn('uuid')
+  userId: string;
 
-  @Column({ nullable: false })
-  firstName: string; // User's first name
+  @Column()
+  firstName: string;
 
-  @Column({ nullable: false })
-  lastName: string; // User's last name
+  @Column()
+  lastName: string;
 
-  @Column({ nullable: false, unique: true })
-  email: string; // Unique email for login
+  @Column({ unique: true })
+  email: string;
 
-  @Column({ nullable: false })
-  password: string; // Hashed password
+  @Column()
+  password: string; // hashed password
 
-  @Column({ nullable: false })
-  phoneNumber: string; // Optional, for contact/verification
+  @Column({ nullable: true })
+  phoneNumber: string;
 
-  @Column({ nullable: false })
-  address: string; // Optional, user’s address
+  @Column({ nullable: true })
+  address: string;
 
-  @Column({
-    nullable: false,
-    default: 'user',
-    enum: ['user', 'admin'],
-    type: 'simple-array',
-  })
-  role: string[]; // user / admin
+  @Column({ type: 'enum', enum: ['user', 'admin'], default: 'user' })
+  role: UserRole;
 
   @Column({
-    nullable: false,
+    type: 'enum',
+    enum: ['active', 'inactive', 'suspended'],
     default: 'active',
-    enum: ['suspended', 'active', 'inactive'],
   })
-  status: string; // active / inactive / suspended
+  status: UserStatus;
 
-  @Column({ nullable: false, default: new Date(), type: 'timestamp' })
-  createdAt: Date; // Account creation date
+  @Column({ nullable: true })
+  dateOfBirth: Date;
 
-  @Column({ nullable: false, default: new Date(), type: 'timestamp' })
-  updatedAt: Date; // Last profile update
+  @Column({ default: false })
+  twoFactorEnabled: boolean;
+
+  @Column({ nullable: true })
+  profilePicture: string;
+
+  @Column({ nullable: true })
+  lastLogin: Date;
+
+  @OneToMany(() => Account, (account) => account.user)
+  accounts: Account[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }
