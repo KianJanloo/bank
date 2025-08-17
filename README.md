@@ -1,98 +1,158 @@
+# 🏦 Modern Banking API
+
+A robust and secure banking API built with NestJS, featuring account management, transactions, and role-based access control.
+
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+  <img src="https://nestjs.com/img/logo-small.svg" width="120" alt="NestJS Logo" />
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
+<p align="center">
+  <img src="https://img.shields.io/badge/NestJS-v11-red.svg" alt="NestJS Version" />
+  <img src="https://img.shields.io/badge/TypeScript-v5-blue.svg" alt="TypeScript Version" />
+  <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License" />
 </p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+## ✨ Features
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- 👤 **User Management**
+  - Registration and authentication
+  - Role-based access control (RBAC)
+  - JWT authentication
+  
+- 💰 **Account Management**
+  - Create and manage bank accounts
+  - Account balance tracking
+  - Account status management
+  
+- 💸 **Transactions**
+  - Secure money transfers
+  - Transaction history
+  - Real-time transaction processing
+  
+- 🔒 **Security**
+  - JWT-based authentication
+  - Password hashing with bcrypt
+  - Role-based authorization
+  - Helmet security headers
 
-## Project setup
+## 🚀 Quick Start
 
+### Prerequisites
+
+- Node.js (v18 or higher)
+- pnpm package manager
+- PostgreSQL database
+
+### Installation
+
+1. Clone the repository:
 ```bash
-$ pnpm install
+git clone https://github.com/KianJanloo/bank.git
+cd bank
 ```
 
-## Compile and run the project
-
+2. Install dependencies:
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+pnpm install
 ```
 
-## Run tests
-
+3. Set up environment variables:
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+# Create a .env file in the root directory and add:
+DATABASE_URL=postgresql://user:password@localhost:5432/bankdb
+JWT_SECRET=your_jwt_secret
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
+4. Start the development server:
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+pnpm run start:dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+The API will be available at `http://localhost:3000`
 
-## Resources
+## 🛠️ Tech Stack
 
-Check out a few resources that may come in handy when working with NestJS:
+- **Framework**: NestJS v11
+- **Language**: TypeScript v5
+- **Database**: PostgreSQL with TypeORM
+- **Authentication**: JWT (JSON Web Tokens)
+- **API Documentation**: Swagger/OpenAPI
+- **Testing**: Jest
+- **Security**: Helmet, bcrypt
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## 📚 API Documentation
 
-## Support
+Once the server is running, visit `http://localhost:3000/api` to access the Swagger documentation.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Main Endpoints
 
-## Stay in touch
+- `POST /auth/register` - Register a new user
+- `POST /auth/login` - User login
+- `GET /accounts` - List user accounts
+- `POST /transactions` - Create a new transaction
+- `GET /users/profile` - Get user profile
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## 🧪 Testing
 
-## License
+Run the test suite:
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```bash
+# Unit tests
+pnpm run test
+
+# E2E tests
+pnpm run test:e2e
+
+# Test coverage
+pnpm run test:cov
+```
+
+## 🛣️ Project Structure
+
+```
+src/
+├── auth/           # Authentication & authorization
+├── users/          # User management
+├── accounts/       # Account management
+├── transactions/   # Transaction handling
+├── guards/         # Security guards
+└── entities/       # Database entities
+```
+
+## 🔧 Development
+
+```bash
+# Format code
+pnpm run format
+
+# Lint code
+pnpm run lint
+
+# Build for production
+pnpm run build
+```
+
+## 🚀 Deployment
+
+1. Build the application:
+```bash
+pnpm run build
+```
+
+2. Start in production mode:
+```bash
+pnpm run start:prod
+```
+
+## 📝 License
+
+This project is [MIT licensed](LICENSE).
+
+## 👥 Author
+
+Kian Janloo
+- GitHub: [@KianJanloo](https://github.com/KianJanloo)
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome! Feel free to check [issues page](https://github.com/KianJanloo/bank/issues).
