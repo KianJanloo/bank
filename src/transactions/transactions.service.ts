@@ -1,26 +1,136 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
+import { Transaction } from '../entities/Transaction.entity';
+import { AccountsService } from '../accounts/accounts.service';
 
 @Injectable()
 export class TransactionsService {
-  create(createTransactionDto: CreateTransactionDto) {
-    return 'This action adds a new transaction';
+  constructor(
+    @InjectRepository(Transaction)
+    private readonly transactionRepository: Repository<Transaction>,
+    private readonly accountsService: AccountsService,
+    private readonly dataSource: DataSource,
+  ) {}
+
+  async create(
+    createTransactionDto: CreateTransactionDto,
+  ): Promise<Transaction> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const account = await this.accountsService.findOne(
+        createTransactionDto.accountId,
+      );
+
+      const transaction = this.transactionRepository.create({
+        ...createTransactionDto,
+        account,
+        status: 'pending',
+      });
+
+      // Process transaction based on type
+      switch (transaction.type) {
+        case 'deposit':
+          await this.accountsService.updateBalance(
+            account.accountId,
+            transaction.amount,
+          );
+          break;
+        case 'withdrawal':
+          await this.accountsService.updateBalance(
+            account.accountId,
+            -transaction.amount,
+          );
+          break;
+        case 'transfer':
+          if (!createTransactionDto.relatedAccountId) {
+            throw new BadRequestException(
+              'Related account ID is required for transfers',
+            );
+          }
+          const destinationAccount = await this.accountsService.findOne(
+            createTransactionDto.relatedAccountId,
+          );
+          await this.accountsService.updateBalance(
+            account.accountId,
+            -transaction.amount,
+          );
+          await this.accountsService.updateBalance(
+            destinationAccount.accountId,
+            transaction.amount,
+          );
+          break;
+        default:
+          throw new BadRequestException('Invalid transaction type');
+      }
+
+      transaction.status = 'completed';
+      const savedTransaction =
+        await this.transactionRepository.save(transaction);
+      await queryRunner.commitTransaction();
+      return savedTransaction;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
-  findAll() {
-    return `This action returns all transactions`;
+  async findAll(): Promise<Transaction[]> {
+    return await this.transactionRepository.find({
+      relations: ['account'],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} transaction`;
+  async findOne(id: string): Promise<Transaction> {
+    const transaction = await this.transactionRepository.findOne({
+      where: { transactionId: id },
+      relations: ['account'],
+    });
+
+    if (!transaction) {
+      throw new NotFoundException(`Transaction with ID ${id} not found`);
+    }
+
+    return transaction;
   }
 
-  update(id: number, updateTransactionDto: UpdateTransactionDto) {
-    return `This action updates a #${id} transaction`;
+  async findByAccount(accountId: string): Promise<Transaction[]> {
+    return await this.transactionRepository.find({
+      where: { accountId },
+      relations: ['account'],
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} transaction`;
+  // Note: Transactions should not be updated or removed in a production environment
+  // These methods are included for completeness but should be restricted
+  async update(
+    id: string,
+    updateTransactionDto: UpdateTransactionDto,
+  ): Promise<Transaction> {
+    const transaction = await this.findOne(id);
+    if (transaction.status === 'completed') {
+      throw new BadRequestException('Cannot update completed transactions');
+    }
+    Object.assign(transaction, updateTransactionDto);
+    return await this.transactionRepository.save(transaction);
+  }
+
+  async remove(id: string): Promise<void> {
+    const transaction = await this.findOne(id);
+    if (transaction.status === 'completed') {
+      throw new BadRequestException('Cannot remove completed transactions');
+    }
+    await this.transactionRepository.remove(transaction);
   }
 }
