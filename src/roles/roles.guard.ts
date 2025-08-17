@@ -5,10 +5,9 @@ import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from './roles.decorator';
 
 export interface UserWithRoles {
-  id: number;
+  sub: number;
   email: string;
-  phoneNumber: string;
-  roles: string[];
+  role: string;
 }
 
 @Injectable()
@@ -34,12 +33,12 @@ export class RolesGuard implements CanActivate {
       throw new ForbiddenException('User not authenticated');
     }
 
-    if (!user.roles || !Array.isArray(user.roles)) {
+    if (!user.role || !Array.isArray(user.role)) {
       throw new ForbiddenException('User has no roles assigned');
     }
 
     const hasRequiredRole = requiredRoles.some(role => 
-      user.roles.includes(role)
+      user.role.includes(role)
     );
 
     if (!hasRequiredRole) {
