@@ -7,7 +7,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
-import { Transaction } from '../entities/Transaction.entity';
+import {
+  Transaction,
+  TransactionStatus,
+  TransactionType,
+} from '../entities/Transaction.entity';
 import { AccountsService } from '../accounts/accounts.service';
 
 @Injectable()
@@ -33,25 +37,24 @@ export class TransactionsService {
 
       const transaction = this.transactionRepository.create({
         ...createTransactionDto,
-        account,
-        status: 'pending',
+        status: TransactionStatus.PENDING,
       });
 
       // Process transaction based on type
       switch (transaction.type) {
-        case 'deposit':
+        case TransactionType.DEPOSIT:
           await this.accountsService.updateBalance(
             account.accountId,
             transaction.amount,
           );
           break;
-        case 'withdrawal':
+        case TransactionType.WITHDRAWAL:
           await this.accountsService.updateBalance(
             account.accountId,
             -transaction.amount,
           );
           break;
-        case 'transfer':
+        case TransactionType.TRANSFER: {
           if (!createTransactionDto.relatedAccountId) {
             throw new BadRequestException(
               'Related account ID is required for transfers',
@@ -69,11 +72,12 @@ export class TransactionsService {
             transaction.amount,
           );
           break;
+        }
         default:
           throw new BadRequestException('Invalid transaction type');
       }
 
-      transaction.status = 'completed';
+      transaction.status = TransactionStatus.COMPLETED;
       const savedTransaction =
         await this.transactionRepository.save(transaction);
       await queryRunner.commitTransaction();
@@ -119,7 +123,7 @@ export class TransactionsService {
     updateTransactionDto: UpdateTransactionDto,
   ): Promise<Transaction> {
     const transaction = await this.findOne(id);
-    if (transaction.status === 'completed') {
+    if (transaction.status === TransactionStatus.COMPLETED) {
       throw new BadRequestException('Cannot update completed transactions');
     }
     Object.assign(transaction, updateTransactionDto);
@@ -128,7 +132,7 @@ export class TransactionsService {
 
   async remove(id: string): Promise<void> {
     const transaction = await this.findOne(id);
-    if (transaction.status === 'completed') {
+    if (transaction.status === TransactionStatus.COMPLETED) {
       throw new BadRequestException('Cannot remove completed transactions');
     }
     await this.transactionRepository.remove(transaction);
