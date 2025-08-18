@@ -144,6 +144,10 @@ pnpm run build
 pnpm run start:prod
 ```
 
+### 🌐 Live Deployment
+
+The API is deployed on Railway and available here: https://bank-production-7646.up.railway.app/
+
 ## 📝 License
 
 This project is [MIT licensed](LICENSE).
