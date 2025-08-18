@@ -1,10 +1,10 @@
 {
-    "info": {
-        "_postman_id": "1234567-89ab-cdef-0123-456789abcdef",
-        "name": "Bank API",
-        "description": "Complete API collection for the Modern Banking System",
-        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-    },
+	"info": {
+		"_postman_id": "1234567-89ab-cdef-0123-456789abcdef",
+		"name": "Bank API",
+		"description": "Complete API collection for the Modern Banking System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
 	"variable": [
 		{
 			"key": "base_url",
@@ -18,6 +18,28 @@
 		}
 	],
 	"item": [
+		{
+			"name": "App",
+			"item": [
+				{
+					"name": "Root",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": "Health/root endpoint"
+					}
+				}
+			]
+		},
 		{
 			"name": "Auth",
 			"item": [
@@ -33,14 +55,19 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"Password123!\",\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"phoneNumber\": \"+1234567890\"\n}"
+							"raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"user@example.com\",\n  \"password\": \"Password123!\",\n  \"phoneNumber\": \"+1234567890\",\n  \"address\": \"123 Main St\",\n  \"role\": \"user\",\n  \"status\": \"active\",\n  \"dateOfBirth\": \"1990-01-01\",\n  \"twoFactorEnabled\": false,\n  \"profilePicture\": \"https://example.com/avatar.jpg\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/auth/register",
-							"host": ["{{base_url}}"],
-							"path": ["auth", "register"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
 						},
-						"description": "Register a new user in the system"
+						"description": "Register a new user"
 					}
 				},
 				{
@@ -50,8 +77,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"var jsonData = pm.response.json();",
-									"pm.collectionVariables.set(\"token\", jsonData.access_token);"
+									"const jsonData = pm.response.json();",
+									"pm.collectionVariables.set('token', jsonData.accessToken);"
 								],
 								"type": "text/javascript"
 							}
@@ -67,14 +94,19 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"Password123!\"\n}"
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Password123!\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/auth/login",
-							"host": ["{{base_url}}"],
-							"path": ["auth", "login"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
 						},
-						"description": "Login to get JWT token"
+						"description": "Login and store JWT token as collection variable 'token'"
 					}
 				}
 			]
@@ -83,7 +115,7 @@
 			"name": "Users",
 			"item": [
 				{
-					"name": "Get User Profile",
+					"name": "Create User (Admin)",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -95,30 +127,7 @@
 								}
 							]
 						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/users/profile",
-							"host": ["{{base_url}}"],
-							"path": ["users", "profile"]
-						},
-						"description": "Get current user's profile"
-					}
-				},
-				{
-					"name": "Update User Profile",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PATCH",
+						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -127,14 +136,18 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"firstName\": \"Updated\",\n    \"lastName\": \"Name\",\n    \"phoneNumber\": \"+1987654321\"\n}"
+							"raw": "{\n  \"firstName\": \"Alice\",\n  \"lastName\": \"Admin\",\n  \"email\": \"alice.admin@example.com\",\n  \"password\": \"Password123!\",\n  \"phoneNumber\": \"+1234567890\",\n  \"address\": \"456 Admin Rd\",\n  \"role\": \"admin\",\n  \"status\": \"active\",\n  \"dateOfBirth\": \"1990-05-05\",\n  \"profilePicture\": \"https://example.com/alice.jpg\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/users",
-							"host": ["{{base_url}}"],
-							"path": ["users"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							]
 						},
-						"description": "Update user profile information"
+						"description": "Create a new user (requires admin role)"
 					}
 				},
 				{
@@ -154,51 +167,18 @@
 						"header": [],
 						"url": {
 							"raw": "{{base_url}}/users",
-							"host": ["{{base_url}}"],
-							"path": ["users"]
-						},
-						"description": "Get all users (admin only)"
-					}
-				}
-			]
-		},
-		{
-			"name": "Accounts",
-			"item": [
-				{
-					"name": "Create Account",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
 							]
 						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"accountType\": \"SAVINGS\",\n    \"currency\": \"USD\",\n    \"initialBalance\": 1000.00\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/accounts",
-							"host": ["{{base_url}}"],
-							"path": ["accounts"]
-						},
-						"description": "Create a new bank account"
+						"description": "List all users (requires admin role)"
 					}
 				},
 				{
-					"name": "Get All Accounts",
+					"name": "Get User by ID (User/Admin)",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -213,44 +193,61 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/accounts",
-							"host": ["{{base_url}}"],
-							"path": ["accounts"]
-						},
-						"description": "Get all accounts for current user"
-					}
-				},
-				{
-					"name": "Get Account by ID",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/accounts/:id",
-							"host": ["{{base_url}}"],
-							"path": ["accounts", ":id"],
+							"raw": "{{base_url}}/users/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								":id"
+							],
 							"variable": [
 								{
 									"key": "id",
-									"value": "123"
+									"value": "11111111-1111-1111-1111-111111111111"
 								}
 							]
 						},
-						"description": "Get specific account details"
+						"description": "Get a user by ID (requires user or admin role)"
 					}
 				},
 				{
-					"name": "Close Account",
+					"name": "Get User by Email (Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/email/:email",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"email",
+								":email"
+							],
+							"variable": [
+								{
+									"key": "email",
+									"value": "user@example.com"
+								}
+							]
+						},
+						"description": "Get a user by email (requires admin role)"
+					}
+				},
+				{
+					"name": "Update User (User/Admin)",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -271,29 +268,68 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"status\": \"CLOSED\"\n}"
+							"raw": "{\n  \"firstName\": \"Updated\",\n  \"lastName\": \"Name\",\n  \"phoneNumber\": \"+1987654321\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/accounts/:id",
-							"host": ["{{base_url}}"],
-							"path": ["accounts", ":id"],
+							"raw": "{{base_url}}/users/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								":id"
+							],
 							"variable": [
 								{
 									"key": "id",
-									"value": "123"
+									"value": "11111111-1111-1111-1111-111111111111"
 								}
 							]
 						},
-						"description": "Close an existing account"
+						"description": "Update a user (requires user or admin role)"
+					}
+				},
+				{
+					"name": "Delete User (Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "11111111-1111-1111-1111-111111111111"
+								}
+							]
+						},
+						"description": "Delete a user (requires admin role)"
 					}
 				}
 			]
 		},
 		{
-			"name": "Transactions",
+			"name": "Accounts",
 			"item": [
 				{
-					"name": "Create Transaction",
+					"name": "Create Account (Admin)",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -314,18 +350,236 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"fromAccountId\": \"123\",\n    \"toAccountId\": \"456\",\n    \"amount\": 100.00,\n    \"description\": \"Payment for services\"\n}"
+							"raw": "{\n  \"userId\": \"11111111-1111-1111-1111-111111111111\",\n  \"accountType\": \"savings\",\n  \"currency\": \"USD\",\n  \"branchCode\": \"NYC001\",\n  \"accountNickname\": \"My Savings\",\n  \"interestRate\": 2.5,\n  \"overdraftLimit\": 0\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/transactions",
-							"host": ["{{base_url}}"],
-							"path": ["transactions"]
+							"raw": "{{base_url}}/accounts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"accounts"
+							]
 						},
-						"description": "Create a new transaction between accounts"
+						"description": "Create a new bank account (requires admin role)"
 					}
 				},
 				{
-					"name": "Get All Transactions",
+					"name": "Get All Accounts (Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/accounts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"accounts"
+							]
+						},
+						"description": "Get all accounts (requires admin role)"
+					}
+				},
+				{
+					"name": "Get Account by ID (User/Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/accounts/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"accounts",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "11111111-1111-1111-1111-111111111111"
+								}
+							]
+						},
+						"description": "Get account by ID (requires user or admin role)"
+					}
+				},
+				{
+					"name": "Get Accounts by User ID (User/Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/accounts/user/:userId",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"accounts",
+								"user",
+								":userId"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "11111111-1111-1111-1111-111111111111"
+								}
+							]
+						},
+						"description": "Get accounts by user ID (requires user or admin role)"
+					}
+				},
+				{
+					"name": "Update Account (Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"currency\": \"USD\",\n  \"branchCode\": \"NYC002\",\n  \"accountNickname\": \"New Nickname\",\n  \"interestRate\": 3.0,\n  \"overdraftLimit\": 500\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/accounts/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"accounts",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "11111111-1111-1111-1111-111111111111"
+								}
+							]
+						},
+						"description": "Update an account (requires admin role)"
+					}
+				},
+				{
+					"name": "Delete Account (Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/accounts/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"accounts",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "11111111-1111-1111-1111-111111111111"
+								}
+							]
+						},
+						"description": "Delete an account (requires admin role)"
+					}
+				}
+			]
+		},
+		{
+			"name": "Transactions",
+			"item": [
+				{
+					"name": "Create Transaction (User/Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"accountId\": \"11111111-1111-1111-1111-111111111111\",\n  \"type\": \"deposit\",\n  \"amount\": 100.00,\n  \"currency\": \"USD\",\n  \"reference\": \"PAYMENT-001\",\n  \"relatedAccountId\": \"22222222-2222-2222-2222-222222222222\",\n  \"notes\": \"Monthly deposit\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/transactions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"transactions"
+							]
+						},
+						"description": "Create a transaction (requires user or admin role)"
+					}
+				},
+				{
+					"name": "Get All Transactions (Admin)",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -341,31 +595,18 @@
 						"header": [],
 						"url": {
 							"raw": "{{base_url}}/transactions",
-							"host": ["{{base_url}}"],
-							"path": ["transactions"],
-							"query": [
-								{
-									"key": "fromDate",
-									"value": "2025-01-01",
-									"description": "Optional filter by start date"
-								},
-								{
-									"key": "toDate",
-									"value": "2025-12-31",
-									"description": "Optional filter by end date"
-								},
-								{
-									"key": "accountId",
-									"value": "123",
-									"description": "Optional filter by account"
-								}
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"transactions"
 							]
 						},
-						"description": "Get all transactions with optional filters"
+						"description": "List all transactions (requires admin role)"
 					}
 				},
 				{
-					"name": "Get Transaction by ID",
+					"name": "Get Transaction by ID (User/Admin)",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -381,16 +622,133 @@
 						"header": [],
 						"url": {
 							"raw": "{{base_url}}/transactions/:id",
-							"host": ["{{base_url}}"],
-							"path": ["transactions", ":id"],
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"transactions",
+								":id"
+							],
 							"variable": [
 								{
 									"key": "id",
-									"value": "789"
+									"value": "33333333-3333-3333-3333-333333333333"
 								}
 							]
 						},
-						"description": "Get specific transaction details"
+						"description": "Get a transaction by ID (requires user or admin role)"
+					}
+				},
+				{
+					"name": "Get Transactions by Account ID (User/Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/transactions/account/:accountId",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"transactions",
+								"account",
+								":accountId"
+							],
+							"variable": [
+								{
+									"key": "accountId",
+									"value": "11111111-1111-1111-1111-111111111111"
+								}
+							]
+						},
+						"description": "List transactions for an account (requires user or admin role)"
+					}
+				},
+				{
+					"name": "Update Transaction (Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"type\": \"withdrawal\",\n  \"amount\": 50.00,\n  \"currency\": \"USD\",\n  \"reference\": \"ADJ-001\",\n  \"notes\": \"Manual adjustment\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/transactions/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"transactions",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "33333333-3333-3333-3333-333333333333"
+								}
+							]
+						},
+						"description": "Update a transaction (requires admin role)"
+					}
+				},
+				{
+					"name": "Delete Transaction (Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/transactions/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"transactions",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "33333333-3333-3333-3333-333333333333"
+								}
+							]
+						},
+						"description": "Delete a transaction (requires admin role)"
 					}
 				}
 			]
