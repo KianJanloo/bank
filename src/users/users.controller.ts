@@ -11,6 +11,7 @@ import {
   ParseUUIDPipe,
   HttpStatus,
   HttpCode,
+  Req,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -27,7 +28,7 @@ import { Roles } from '../roles/roles.decorator';
 import { User } from '../entities/User.entity';
 
 @ApiTags('Users')
-@ApiBearerAuth()
+@ApiBearerAuth('bearer')
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
@@ -53,24 +54,41 @@ export class UsersController {
 
   @Get()
   @Roles('admin')
+  @ApiOperation({ summary: 'List all users' })
+  @ApiResponse({ status: 200, description: 'List of users', type: [User] })
   async findAll(): Promise<User[]> {
     return await this.usersService.findAll();
   }
 
   @Get(':id')
   @Roles('user', 'admin')
+  @ApiOperation({ summary: 'Get user by ID' })
+  @ApiResponse({ status: 200, description: 'User details', type: User })
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<User> {
     return await this.usersService.findOne(id);
   }
 
   @Get('email/:email')
   @Roles('admin')
+  @ApiOperation({ summary: 'Get user by email' })
+  @ApiResponse({ status: 200, description: 'User details', type: User })
   async findByEmail(@Param('email') email: string): Promise<User> {
     return await this.usersService.findByEmail(email);
   }
 
+  @Get('profile')
+  @Roles('user', 'admin')
+  @ApiOperation({ summary: 'Get current user profile' })
+  @ApiResponse({ status: 200, description: 'Current user details', type: User })
+  async getProfile(@Req() req: any): Promise<User> {
+    const userId: string = req.user?.sub;
+    return await this.usersService.findOne(userId);
+  }
+
   @Patch(':id')
   @Roles('admin', 'user')
+  @ApiOperation({ summary: 'Update user' })
+  @ApiResponse({ status: 200, description: 'Updated user', type: User })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body(new ValidationPipe()) updateUserDto: UpdateUserDto,
@@ -81,6 +99,8 @@ export class UsersController {
   @Delete(':id')
   @Roles('admin')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete user' })
+  @ApiResponse({ status: 204, description: 'User deleted' })
   async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.usersService.remove(id);
   }

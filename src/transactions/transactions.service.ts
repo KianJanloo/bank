@@ -84,7 +84,7 @@ export class TransactionsService {
       return savedTransaction;
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      throw error;
+      throw new BadRequestException(error);
     } finally {
       await queryRunner.release();
     }
